@@ -1,0 +1,45 @@
+#设计数据库
+
+create table admin(
+	adminid INT PRIMARY KEY AUTO_INCREMENT,
+	name VARCHAR(50),
+	password VARCHAR(50)
+)
+
+create table foodcategory(
+	fcid INT PRIMARY KEY AUTO_INCREMENT,
+	fcname VARCHAR(20)
+);
+insert into foodcategory(fcname) values("快餐");
+insert into foodcategory(fcname) values("汉堡");
+insert into foodcategory(fcname) values("炸鸡");
+insert into foodcategory(fcname) values("饮料");
+
+
+create table food(
+ fid INT PRIMARY KEY AUTO_INCREMENT,
+ fcategory INT,
+ fname VARCHAR(20),
+ fdescript VARCHAR(50),
+ fprice FLOAT,
+ fimg VARCHAR(50)
+);
+insert into food(fname,fdescript,fprice,fimg) values("鸡腿汉堡",1,"脆皮鸡腿汉堡",6.8,"images/food/jthb.jpg");
+insert into food(fname,fdescript,fprice,fimg) values("鸡腿汉堡",1,"脆皮鸡腿汉堡",6.8,"images/food/jthb.jpg");
+insert into food(fname,fdescript,fprice,fimg) values("鸡腿汉堡",1,"脆皮鸡腿汉堡",6.8,"images/food/jthb.jpg");
+insert into food(fname,fdescript,fprice,fimg) values("鸡腿汉堡",1,"脆皮鸡腿汉堡",6.8,"images/food/jthb.jpg");
+
+create table order(
+	oid INT PRIMARY KEY AUTO_INCREMENT,
+	ordernumber INT,
+	orderTime VARCHAR(50),
+	orderprice FLOAT,
+	ocomment VARCHAR(50)
+);
+
+create table food_order(
+	oid INT PRIMARY KEY AUTO_INCREMENT,
+	fid INT,
+	fnum INT
+);
+
