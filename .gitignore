@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> fd6b239 (First Commit)
 # Compiled class file
 *.class
 
@@ -25,9 +21,7 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
-<<<<<<< HEAD
-=======
-=======
+
 **/node_modules
 **/target
 **/.idea
@@ -44,6 +38,3 @@ pnpm-debug.log*
 
 
 .idea
-
->>>>>>> 05dcd07 (First Commit)
->>>>>>> fd6b239 (First Commit)
