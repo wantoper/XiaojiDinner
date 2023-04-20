@@ -1,22 +1,22 @@
 <template>
   <div class="personal-center-container body">
     <div class="header">
-        <div class="back" @click="back">
-            <i class="el-icon-arrow-left"></i>
-        </div>
-        <div class="title">个人中心</div>
+      <div class="back" @click="back">
+        <i class="el-icon-arrow-left"></i>
+      </div>
+      <div class="title">个人中心</div>
     </div>
     <!-- <br/> -->
-    <img src="../../assets/picture/userpage1.jpg" class="userpage1"/>
+    <img src="../../assets/picture/userpage1.jpg" class="userpage1" />
     <!--用户头像/昵称/手机号-->
     <div class="personal-center-profile">
-      <img :src="this.user.profilePhoto" class="avatar"/>
+      <img :src="this.user.profilePhoto" class="avatar" />
       <div class="user-info">
         <div class="usernameandrank">
           <div class="user-name">{{ this.user.customer }}</div>
-          <div class="usergrade">{{ this.rank}}</div>
+          <div class="usergrade">{{ this.rank }}</div>
         </div>
-        
+
         <div class="user-phone">{{ this.user.phoneNumber }}</div>
       </div>
       <!--差一个会员的logo /男生女生的logo-->
@@ -25,15 +25,15 @@
         <div class="jifennum">{{ this.user.accumulatedAmount }}</div>
         <div class="jifen">积分</div>
         <div class="fenge"></div>
-        <div class="dingdannum">{{this.orderNumber}}</div>
+        <div class="dingdannum">{{ this.orderNumber }}</div>
         <div class="dingdan">订单</div>
       </div>
     </div>
     <div class="orders">
       <OrderHistory></OrderHistory>
-      <br/>
+      <br />
     </div>
-    <img src="../../assets/picture/userbg1.png" class="userpage4"/> 
+    <img src="../../assets/picture/userbg1.png" class="userpage4" />
   </div>
 </template>
 
@@ -41,89 +41,99 @@
 import OrderHistory from "./OrderHistory.vue";
 export default {
   name: "UserPage",
-  components:{
-    OrderHistory
+  components: {
+    OrderHistory,
   },
   data() {
     return {
       user: {
-        customer: '爱吃炸鸡的牛牛',
-        phoneNumber: '12345678910',
-        profilePhoto: 'https://alist.wantoper.top/d/%E5%9B%BE%E7%89%87/preview.jpg',
+        customer: "爱吃炸鸡的牛牛",
+        phoneNumber: "12345678910",
+        profilePhoto:
+          "https://alist.wantoper.top/d/%E5%9B%BE%E7%89%87/preview.jpg",
         accumulatedAmount: 200,
         customerID: 0,
       },
       orderNumber: 3,
-    }
+    };
   },
   methods: {
-    back(){
-      this.$router.push("/index/1");;
+    back() {
+      this.$router.push("/index/1");
     },
     //加载用户信息
     loadUser() {
-      this.$api.get("/customer/" + sessionStorage.getItem('customerID')).then(res => {
-        this.user = res.data;
-        this.user.phoneNumber = res.data.phoneNumber.substring(0, 3) + "****" + res.data.phoneNumber.substring(7, 11);
-        this.user.accumulatedAmount = res.data.accumulatedAmount;
-        if(this.user.profilePhoto == null){
-          this.user.profilePhoto = require("../../assets/picture/userpage2.jpg"); //本地的照片要用require，因为是静态资源，不是网络资源，require是webpack的语法,表示引入一个静态资源
-        }
-        console.log(res.data)
-      });
+      this.$api
+        .get("/customer/" + sessionStorage.getItem("customerID"))
+        .then((res) => {
+          this.user = res.data;
+          this.user.phoneNumber =
+            res.data.phoneNumber.substring(0, 3) +
+            "****" +
+            res.data.phoneNumber.substring(7, 11);
+          this.user.accumulatedAmount = res.data.accumulatedAmount;
+          if (this.user.profilePhoto == null) {
+            this.user.profilePhoto = require("../../assets/picture/userpage2.jpg"); //本地的照片要用require，因为是静态资源，不是网络资源，require是webpack的语法,表示引入一个静态资源
+          }
+          console.log(res.data);
+        });
 
       //用户订单总数
-      this.$api.get("/orderinfo/history/ordernumber/" + sessionStorage.getItem('customerID')).then(res => {
-
-        this.orderNumber = res.data;
-        console.log(this.orderNumber)
-      });
+      this.$api
+        .get(
+          "/orderinfo/history/ordernumber/" +
+            sessionStorage.getItem("customerID")
+        )
+        .then((res) => {
+          this.orderNumber = res.data;
+          console.log(this.orderNumber);
+        });
     },
   },
-  computed:{
-    rank(){
-      if(this.user.accumulatedAmount<50) return "青铜吃货"
-      if(this.user.accumulatedAmount<100) return "白银吃货"
-      if(this.user.accumulatedAmount<200) return "黄金吃货"
-      if(this.user.accumulatedAmount<300) return "钻石吃货"
-      return "荣耀吃货"
-    }
+  computed: {
+    rank() {
+      if (this.user.accumulatedAmount < 50) return "青铜吃货";
+      if (this.user.accumulatedAmount < 100) return "白银吃货";
+      if (this.user.accumulatedAmount < 200) return "黄金吃货";
+      if (this.user.accumulatedAmount < 300) return "钻石吃货";
+      return "荣耀吃货";
+    },
   },
   mounted() {
     // this.loadUser();
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>
-.header{
-    background:rgb(0,160,220);
-    height: 45px;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    color: #fff;
+.header {
+  background: rgb(0, 160, 220);
+  height: 45px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  color: #fff;
 }
-.header > .back{
-    position: absolute;
-    top: 2px;
-    left: 0;
+.header > .back {
+  position: absolute;
+  top: 2px;
+  left: 0;
 }
-.header > .back > .el-icon-arrow-left{
-    display: block;
-    padding: 10px;
-    font-size: 20px;
-    color: #fff;
+.header > .back > .el-icon-arrow-left {
+  display: block;
+  padding: 10px;
+  font-size: 20px;
+  color: #fff;
 }
-.header > .title{
-    font-size: 20px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+.header > .title {
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-.body{
+.body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -222,16 +232,25 @@ export default {
 .personal-center-container {
   height: 100%;
   //background: #fcfbfb;
-  background-image: linear-gradient(180deg, rgba(255,0,0,0), #fddfba, #f4eddd);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 0, 0, 0),
+    #fddfba,
+    #f4eddd
+  );
   //height: 500px;
 }
 
-.orders{
+.orders {
   margin-top: 15px;
   font-size: 30px;
-  background-image: linear-gradient(180deg, rgba(255,0,0,0), #fddfba, #f4eddd);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 0, 0, 0),
+    #fddfba,
+    #f4eddd
+  );
 }
-
 
 /*用户个人信息栏*/
 .personal-center-profile {
@@ -276,7 +295,7 @@ export default {
   text-align: left;
 }
 
-.usernameandrank{
+.usernameandrank {
   display: flex;
 }
 
@@ -343,7 +362,6 @@ export default {
   background-color: rgba(255, 255, 255, 0) !important;
   -webkit-transform: translateY(-50%);
   transform: translateY(-50%);
-
 }
 
 .center-card-text1 {
@@ -393,14 +411,12 @@ export default {
   font-size: 14px;
 }
 
-
 //云
-.usercloud{
-  position:absolute;
+.usercloud {
+  position: absolute;
   bottom: 234px;
   width: 89px;
   right: 132px;
-
 }
 
 .userpage4 {

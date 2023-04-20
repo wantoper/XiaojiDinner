@@ -1,47 +1,83 @@
 <template>
-
-<div class="form-structor">
-  <div class="login">
-    <div class="center">
-      <h2 class="form-title" id="login">用户登录</h2>
-      <div class="form-holder">
-        <input type="text" class="input" placeholder="手机号" />
-        <input type="password" class="input" placeholder="密码" />
+  <div class="form-structor">
+    <div class="login">
+      <i class="el-icon-arrow-left backicon" @click="back"></i>
+      <div class="center">
+        <h2 class="form-title" id="login">用户登录</h2>
+        <div class="form-holder">
+          <input
+            type="text"
+            class="input"
+            v-model="loginForm.username"
+            placeholder="手机号"
+          />
+          <input
+            type="password"
+            class="input"
+            v-model="loginForm.password"
+            placeholder="密码"
+          />
+        </div>
+        <i class="el-icon-warning-outline">未注册的用户登录后自动注册！</i>
+        <button class="submit-btn" @click="login">登录</button>
       </div>
-      <i class="el-icon-warning-outline">未注册的用户登录后自动注册！</i>
-      <button class="submit-btn">登录</button>
     </div>
-    <img src="../../assets/picture/userbg1.png" class="userpage4"/> 
+    <img src="../../assets/picture/userbg1.png" class="userpage4" />
   </div>
-</div>
 </template>
 
 <script>
-
 export default {
   name: "Login",
   data() {
-    return{
-      msg:'',
-      isError:false,
-      phoneNumber1: '',//登录手机号
-      password1: '', //登录密码
-      password2: '', //注册第二个密码
-      password: '', //注册第一个密码
-      phonenumber: '', //注册手机号
-      code:'', //注册验证码
-      username: '', //用户名
-    }
-  }
-}
+    return {
+      loginForm: {
+        username: "",
+        password: "",
+      },
+    };
+  },
+  methods: {
+    back() {
+      console.log("123");
+      this.$router.push("/index/1");
+    },
+    login() {
+      this.$axios
+        .post("/api/userlogin", this.loginForm)
+        .then((res) => {
+          if (res.data.code == 0) {
+            this.$message({
+              type: "error",
+              message: "账号或密码错误！",
+            });
+          } else {
+            const token = res.data.data.token;
+            localStorage.setItem("Usertoken", token);
+            const decoded = jwtDecode(token);
 
+            localStorage.setItem("Userid", decoded.sub);
+            this.$message({
+              type: "success",
+              message: "登录成功！用户：" + decoded.sub,
+            });
+            this.$router.push("/user");
+          }
+        })
+        .catch((err) => {
+          console.log("fail!", err);
+        });
+    },
+  },
+};
 </script>
 
 <style scoped>
-html, body {
+html,
+body {
   position: relative;
   min-height: 100vh;
-  background-color: #E1E8EE;
+  background-color: #e1e8ee;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,14 +86,6 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.form-structor {
-  /* background-color: #222; */
-  border-radius: 15px;
-  height: 100%;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-}
 .form-structor::after {
   content: "";
   opacity: 0.8;
@@ -75,8 +103,7 @@ html, body {
   background-image: url("../../assets/picture/lunbo1.jpg");
 }
 
-
-.center i{
+.center i {
   margin-top: 15px;
   font-size: 15px;
   color: darkorange;
@@ -90,12 +117,16 @@ html, body {
   bottom: 0;
   /* height: 100%; */
   /* background-color: #fff; */
-  background-image: linear-gradient(180deg, rgba(255,0,0,0), #fae5cc, #faf7f0);
-  z-index: 5;
-  -webkit-transition: all 0.3s ease;
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 0, 0, 0),
+    #fae5cc,
+    #faf7f0
+  );
+  z-index: 3;
 }
 .form-structor .login::before {
-  content: "";
+  /* content: ""; */
   position: absolute;
   left: 50%;
   top: -20px;
@@ -105,7 +136,7 @@ html, body {
   width: 200%;
   height: 250px;
   border-radius: 50%;
-  z-index: 4;
+  z-index: 1;
   -webkit-transition: all 0.3s ease;
 }
 .form-structor .login .center {
@@ -123,6 +154,9 @@ html, body {
   font-size: 40px;
   font-weight: 600;
   text-align: center;
+  text-shadow: -1px -1px 0px #e6e600, -2px -2px 0px #e6e600,
+    -3px -3px 0px #e6e600, 1px 1px 0px #bfbf00, 2px 2px 0px #bfbf00,
+    3px 3px 0px #bfbf00;
 }
 .form-structor .login .center .form-title span {
   color: rgba(0, 0, 0, 0.4);
@@ -159,7 +193,7 @@ html, body {
   color: rgba(0, 0, 0, 0.4);
 }
 .form-structor .login .center .submit-btn {
-  background-color: #6B92A4;
+  background-color: #6b92a4;
   color: rgba(255, 255, 255, 0.7);
   border: 0;
   border-radius: 15px;
@@ -187,7 +221,8 @@ html, body {
   -webkit-transform: translate(-50%, 0%);
   -webkit-transition: all 0.3s ease;
 }
-.form-structor .login.slide-up .form-holder, .form-structor .login.slide-up .submit-btn {
+.form-structor .login.slide-up .form-holder,
+.form-structor .login.slide-up .submit-btn {
   opacity: 0;
   visibility: hidden;
   -webkit-transition: all 0.3s ease;
@@ -210,6 +245,12 @@ html, body {
   bottom: 0;
   width: 100%;
   height: 25%;
+  z-index: 5;
 }
 
+.backicon {
+  font-size: 50px;
+  color: #6b92a4;
+  /* background-color: aqua; */
+}
 </style>
