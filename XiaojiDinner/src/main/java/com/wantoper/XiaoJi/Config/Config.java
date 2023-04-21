@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.wantoper.XiaoJi.Handle.AdminHandle;
 import com.wantoper.XiaoJi.Handle.LoginHandler;
+import com.wantoper.XiaoJi.Handle.UserHandle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +37,9 @@ public class Config implements WebMvcConfigurer {
     private AdminHandle adminHandle;
     @Autowired
     private LoginHandler loginHandler;
+
+    @Autowired
+    private UserHandle userHandle;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         InterceptorRegistration interceptorRegistration1 = registry.addInterceptor(loginHandler);
@@ -45,6 +49,9 @@ public class Config implements WebMvcConfigurer {
         InterceptorRegistration interceptorRegistration = registry.addInterceptor(adminHandle);
         interceptorRegistration.addPathPatterns("/api/admin/**");
         interceptorRegistration.order(1);
+
+        InterceptorRegistration userinterceptorRegistration = registry.addInterceptor(userHandle);
+        userinterceptorRegistration.addPathPatterns("/api/user/**");
 
     }
 }

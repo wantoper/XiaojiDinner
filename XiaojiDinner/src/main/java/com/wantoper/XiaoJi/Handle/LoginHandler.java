@@ -23,19 +23,19 @@ public class LoginHandler implements HandlerInterceptor {
         String authorization = request.getHeader("Authorization");
         if (authorization == null || jwtConfig.getTokenClaim(authorization)==null){
             response.setCharacterEncoding(StandardCharsets.UTF_8.displayName());
-            Cookie[] cookies = request.getCookies();
-            if (null != cookies) {
-                for (int i = 0; i < cookies.length; i++) {
-                    if (cookies[i].getName().equals("Authorization")){
-                        cookies[i].setPath("/");
-                        cookies[i].setMaxAge(0);
-                        response.addCookie(cookies[i]);
-                        break;
-                    }
-                }
-            }
+//            Cookie[] cookies = request.getCookies();
+//            if (null != cookies) {
+//                for (int i = 0; i < cookies.length; i++) {
+//                    if (cookies[i].getName().equals("Authorization")){
+//                        cookies[i].setPath("/");
+//                        cookies[i].setMaxAge(0);
+//                        response.addCookie(cookies[i]);
+//                        break;
+//                    }
+//                }
+//            }
             PrintWriter writer = response.getWriter();
-            writer.write(JSON.toJSONString(R.success("请先登录！")));
+            writer.write(JSON.toJSONString(R.loginout("请先登录！")));
             return false;
         }
         return true;

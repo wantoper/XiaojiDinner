@@ -5,7 +5,9 @@ import com.wantoper.XiaoJi.Bean.User;
 import com.wantoper.XiaoJi.Mapper.UserMapper;
 import com.wantoper.XiaoJi.Services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserServicesImpl extends ServiceImpl<UserMapper, User> implements UserServices {
     @Autowired UserMapper userMapper;
     public User login(String phone, String password){

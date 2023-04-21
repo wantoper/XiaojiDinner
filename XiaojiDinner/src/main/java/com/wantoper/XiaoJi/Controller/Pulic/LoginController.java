@@ -34,7 +34,6 @@ public class LoginController {
 
         Employee user = employeeServices.login(username, password);
         if(user != null){
-
             user.setPassword("");
             Map<String,Object> objects = new HashMap();
             objects.put("userinfo",user);
@@ -53,18 +52,31 @@ public class LoginController {
         String password= DigestUtils.md5DigestAsHex(login.get("password").getBytes());
 
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<User>();
-        userQueryWrapper.ge("phone",phone);
-        Map<String, Object> map = userServices.getMap(userQueryWrapper);
-
-
-        User user = userServices.login(phone, password);
-        if(user != null){
-            user.setPassword("");
-            Map<String,Object> objects = new HashMap();
-            objects.put("userinfo",user);
-            objects.put("token", jwtConfig.createToken(phone));
-            return R.success(objects);
+        userQueryWrapper.eq("phone",phone);
+        User one = userServices.getOne(userQueryWrapper);
+        if(one == null){
+            User user = new User();
+            user.setPhone(phone);
+            user.setPassword(password);
+            user.setStatus(1);
+            user.setName("吃货"+phone.substring(phone.length()-4));
+            boolean save = userServices.save(user);
+            if(save){
+                Map<String,Object> objects = new HashMap();
+                objects.put("userinfo",user);
+                objects.put("token", jwtConfig.createToken(one.getId()));
+                return R.success(objects,"首次登录，已自动为您注册！");
+            }
+        }else{
+            if(one.getPassword().equals(password)){
+                one.setPassword("");
+                Map<String,Object> objects = new HashMap();
+                objects.put("userinfo",one);
+                objects.put("token", jwtConfig.createToken(one.getId()));
+                return R.success(objects,"登录成功,快去下单吧！");
+            }
         }
+
         return R.error("登陆失败,账号或密码错误");
     }
 }

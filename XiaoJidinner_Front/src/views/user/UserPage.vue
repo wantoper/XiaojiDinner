@@ -10,22 +10,22 @@
     <img src="../../assets/picture/userpage1.jpg" class="userpage1" />
     <!--用户头像/昵称/手机号-->
     <div class="personal-center-profile">
-      <img :src="this.user.profilePhoto" class="avatar" />
+      <img :src="this.user.avatar" class="avatar" />
       <div class="user-info">
         <div class="usernameandrank">
-          <div class="user-name">{{ this.user.customer }}</div>
-          <div class="usergrade">{{ this.rank }}</div>
+          <div class="user-name">{{ this.user.name }}</div>
+          <div class="usergrade">{{ this.ranktitle }}</div>
         </div>
-
-        <div class="user-phone">{{ this.user.phoneNumber }}</div>
+        <div class="user-phone">{{ this.user.phone }}</div>
+        <div class="logout" @click="logout">退出</div>
       </div>
       <!--差一个会员的logo /男生女生的logo-->
-      <!--        <van-icon name="arrow" />-->
+      <!-- <van-icon name="arrow" /> -->
       <div class="user-mny">
-        <div class="jifennum">{{ this.user.accumulatedAmount }}</div>
+        <div class="jifennum">{{ this.user.rank }}</div>
         <div class="jifen">积分</div>
         <div class="fenge"></div>
-        <div class="dingdannum">{{ this.orderNumber }}</div>
+        <div class="dingdannum">{{ this.user.orderNumber }}</div>
         <div class="dingdan">订单</div>
       </div>
     </div>
@@ -47,14 +47,14 @@ export default {
   data() {
     return {
       user: {
-        customer: "爱吃炸鸡的牛牛",
-        phoneNumber: "12345678910",
-        profilePhoto:
-          "https://alist.wantoper.top/d/%E5%9B%BE%E7%89%87/preview.jpg",
-        accumulatedAmount: 200,
-        customerID: 0,
+        // name: "爱吃炸鸡的牛牛",
+        // phone: "12345678910",
+        // avatar: "../../assets/picture/toorderl.png",
+        // accumulatedAmount: 200,
+        // userid: 0,
+        // ran: 200,
+        // orderNumber: 3,
       },
-      orderNumber: 3,
     };
   },
   methods: {
@@ -63,44 +63,30 @@ export default {
     },
     //加载用户信息
     loadUser() {
-      this.$api
-        .get("/customer/" + sessionStorage.getItem("customerID"))
-        .then((res) => {
-          this.user = res.data;
-          this.user.phoneNumber =
-            res.data.phoneNumber.substring(0, 3) +
-            "****" +
-            res.data.phoneNumber.substring(7, 11);
-          this.user.accumulatedAmount = res.data.accumulatedAmount;
-          if (this.user.profilePhoto == null) {
-            this.user.profilePhoto = require("../../assets/picture/userpage2.jpg"); //本地的照片要用require，因为是静态资源，不是网络资源，require是webpack的语法,表示引入一个静态资源
-          }
-          console.log(res.data);
-        });
-
-      //用户订单总数
-      this.$api
-        .get(
-          "/orderinfo/history/ordernumber/" +
-            sessionStorage.getItem("customerID")
-        )
-        .then((res) => {
-          this.orderNumber = res.data;
-          console.log(this.orderNumber);
-        });
+      this.$axios.get("api/user/info").then((res) => {
+        this.user = res.data.data;
+        if (this.user.avatar == null) {
+          this.user.avatar = require("../../assets/picture/toorderl.png");
+        }
+      });
+    },
+    logout() {
+      localStorage.removeItem("Usertoken");
+      localStorage.removeItem("Userinfo");
+      this.$router.push("/user/login");
     },
   },
   computed: {
-    rank() {
-      if (this.user.accumulatedAmount < 50) return "青铜吃货";
-      if (this.user.accumulatedAmount < 100) return "白银吃货";
-      if (this.user.accumulatedAmount < 200) return "黄金吃货";
-      if (this.user.accumulatedAmount < 300) return "钻石吃货";
+    ranktitle() {
+      if (this.user.rank < 50) return "青铜吃货";
+      if (this.user.rank < 100) return "白银吃货";
+      if (this.user.rank < 200) return "黄金吃货";
+      if (this.user.rank < 300) return "钻石吃货";
       return "荣耀吃货";
     },
   },
   mounted() {
-    // this.loadUser();
+    this.loadUser();
   },
 };
 </script>
@@ -424,5 +410,28 @@ export default {
   top: 0px;
   width: 100%;
   height: 15%;
+}
+
+.logout {
+  position: absolute;
+  // margin-top: 150px;
+  // bottom: 0;
+  float: right;
+  margin-left: 80%;
+  top: 15px;
+  width: 50px;
+  height: 25px;
+  background-color: rgb(223, 169, 22);
+  box-shadow: 0 0 2px #000;
+  line-height: 25px;
+  font-size: 15px;
+  border-radius: 15px;
+}
+
+.logout:hover {
+  width: 45px;
+  height: 20px;
+  font-size: 12px;
+  line-height: 20px;
 }
 </style>

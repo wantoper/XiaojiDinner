@@ -8,7 +8,7 @@
           <input
             type="text"
             class="input"
-            v-model="loginForm.username"
+            v-model="loginForm.phone"
             placeholder="手机号"
           />
           <input
@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       loginForm: {
-        username: "",
+        phone: "",
         password: "",
       },
     };
@@ -47,21 +47,27 @@ export default {
         .post("/api/userlogin", this.loginForm)
         .then((res) => {
           if (res.data.code == 0) {
+            //登陆失败
             this.$message({
               type: "error",
-              message: "账号或密码错误！",
+              message: res.data.msg,
             });
           } else {
+            //登陆成功
             const token = res.data.data.token;
-            localStorage.setItem("Usertoken", token);
-            const decoded = jwtDecode(token);
 
-            localStorage.setItem("Userid", decoded.sub);
+            console.log(token);
+            localStorage.setItem("Usertoken", token);
+            localStorage.setItem(
+              "Userinfo",
+              JSON.stringify(res.data.data.userinfo)
+            );
+
             this.$message({
               type: "success",
-              message: "登录成功！用户：" + decoded.sub,
+              message: res.data.msg,
             });
-            this.$router.push("/user");
+            this.$router.push("/index/-1");
           }
         })
         .catch((err) => {

@@ -14,4 +14,7 @@ public class User {
     private String avatar;
     private int status;
     private String password;
+
+    private int rank;
+    private int orderNumber;
 }
