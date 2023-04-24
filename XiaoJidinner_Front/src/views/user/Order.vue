@@ -1,38 +1,39 @@
 <template>
   <div id="body">
-
     <div class="header">
-        <div class="back" @click="back">
-            <i class="el-icon-arrow-left"></i>
-        </div>
-        <div class="title">订单详情</div>
+      <div class="back" @click="back">
+        <i class="el-icon-arrow-left"></i>
+      </div>
+      <div class="title">订单详情</div>
     </div>
 
     <div id="truebody">
       <!--取餐码-->
       <div id="numberbar" style="text-align: left">
-        <h1 id="odernumber">{{ orderNumber}}</h1>
-        <van-badge content="取餐码" id="numberindex"/>
+        <h1 id="odernumber">{{ orderNumber }}</h1>
+        <van-badge :v-show="1" content="取餐码" id="numberindex" />
       </div>
-
 
       <!--订单状态-->
       <div id="step">
         <van-steps :active="currentSwipeItem" id="orderstep">
           <van-step v-for="(item, idx) in 4" :key="idx">
             <template v-slot:active-icon>
-
               <!-- 自定义激活时的样式 -->
               <div class="step-item">
                 <div class="steps-active-icon">
                   <!-- 如果有icon或者图片可以更换放在这里，我的比较简单，我直接css画个圆 -->
-                  <van-icon :name="`${stepicon[idx]}`" size="40px" style="position: absolute;left: -13px;top: -48px"
-                            color="#ffcd56"/>
+                  <van-icon
+                    :name="`${stepicon[idx]}`"
+                    size="40px"
+                    style="position: absolute; left: -13px; top: -48px"
+                    color="#ffcd56"
+                  />
                 </div>
                 <!-- 一定要和激活状态写在一起，不然文字就去进度条上方了，不要文字这个可以不要 -->
-                <span :class="currentSwipeItem === idx?'title-active':''">
-                {{ step[idx] }}
-            </span>
+                <span :class="currentSwipeItem === idx ? 'title-active' : ''">
+                  {{ step[idx] }}
+                </span>
               </div>
             </template>
             <template v-slot:inactive-icon>
@@ -41,17 +42,29 @@
                 <!-- 未激活的样式 -->
                 <div v-if="currentSwipeItem > idx" class="steps-inactive-icon">
                   <!-- 如果有icon或者图片可以更换放在这里，我的比较简单，我直接css画个圆 -->
-                  <van-icon :name="`${stepicon[idx]}`" size="30px" style="position: absolute;left: -9px;top: -43px;"/>
+                  <van-icon
+                    :name="`${stepicon[idx]}`"
+                    size="30px"
+                    style="position: absolute; left: -9px; top: -43px"
+                  />
                 </div>
                 <!-- 激活并且完成的样式 -->
                 <div v-else class="steps-finish-icon">
                   <!-- 如果有icon或者图片可以更换放在这里，我的比较简单，我直接css画个圆 -->
-                  <van-icon :name="`${stepicon[idx]}`" size="30px" style="position: absolute;left: -9px;top: -43px;"/>
+                  <van-icon
+                    :name="`${stepicon[idx]}`"
+                    size="30px"
+                    style="position: absolute; left: -9px; top: -43px"
+                  />
                 </div>
                 <!-- 一定要和激活状态写在一起，不然文字就去进度条上方了，不要文字这个可以不要 -->
-                <span :class="currentSwipeItem > idx?'title-inactive':'title-finish'">
-              {{ step[idx] }}
-            </span>
+                <span
+                  :class="
+                    currentSwipeItem > idx ? 'title-inactive' : 'title-finish'
+                  "
+                >
+                  {{ step[idx] }}
+                </span>
               </div>
             </template>
           </van-step>
@@ -61,44 +74,55 @@
       <!--订单详情-->
       <div id="order-detail-payed" v-for="(dish, index) in orderDetailList">
         <van-card
-            :num="`${dish.number}`"
-            :price="`${dish.dishAmount/dish.number}`"
-            :desc="`${dish.description}`"
-            :title="`${dish.dishName}`"
-            :thumb="`${dish.dishPhoto}`"
-            style="background-color: #ffffff; text-align: left;"
+          :num="`${dish.count}`"
+          :price="(dish.price / dish.count).toFixed(2)"
+          :desc="`${dish.description}`"
+          :title="`${dish.name}`"
+          :thumb="'/api/download?name=' + dish.image"
+          style="background-color: #ffffff; text-align: left"
         />
         <van-divider dashed></van-divider>
       </div>
       <div id="order-detail-payed-total" style="text-align: right">
-        <p>实付 ￥ <strong>{{ totalAmount }}</strong></p>
+        <p>
+          实付 ￥ <strong>{{ amount }}</strong>
+        </p>
       </div>
 
       <!--订单信息-->
       <div id="order-detail-message">
-        <h5 style="text-align: left; ">订单信息</h5>
+        <h5 style="text-align: left">订单信息</h5>
         <van-cell-group>
-          <van-cell title="订单编号" :value="`${orderId}`"/>
-          <van-cell title="下单时间" :value="`${orderTime}`"/>
-          <van-cell title="取餐码" :value="`${orderNumber}`"/>
-          <van-cell title="订单金额" :value="`￥${totalAmount}`"/>
+          <van-cell
+            style="font-size: 13.2px"
+            title="订单编号"
+            :value="`${orderId}`"
+          />
+          <van-cell title="下单时间" :value="`${orderTime}`" />
+          <van-cell title="取餐码" :value="`${orderNumber}`" />
+          <van-cell title="订单金额" :value="`￥${amount}`" />
         </van-cell-group>
       </div>
     </div>
 
-    <br/>
+    <br />
     <div id="orderfooter">
-      <van-button plain hairline round color="#000000" class="footer-button" size="formal" @click="finish">我已取餐
+      <van-button
+        plain
+        hairline
+        round
+        color="#000000"
+        class="footer-button"
+        size="formal"
+        @click="finish"
+        >我已取餐
       </van-button>
     </div>
-
-
   </div>
 </template>
 
 <script>
-
-import {Icon, Step, Steps, Card} from 'vant';
+import { Icon, Step, Steps, Card } from "vant";
 
 export default {
   name: "Order",
@@ -106,212 +130,115 @@ export default {
     Icon,
     Step,
     Steps,
-    Card
+    Card,
   },
   data() {
     return {
-
-
-      //取餐号
-      orderNumber:"2000",
-      // 步骤条
-      currentSwipeItem: 1,
-      step: [
-        "确认中",
-        "配餐中",
-        "待取餐",
-        "已完成"
-      ],
-
-      stepicon: [
-        "todo-list-o",
-        "fire-o",
-        "bulb-o",
-        "passed"
-      ],
-
-      //订单信息
-      orderId: "", //有可能是哈希后的，uuid
+      orderId: "",
+      orderNumber: "2000",
+      currentSwipeItem: 0,
+      step: ["确认中", "配餐中", "待取餐", "已完成"],
+      stepicon: ["todo-list-o", "fire-o", "bulb-o", "passed"],
       orderTime: "2022-23-18",
-      totalAmount: 0,
-      //订单菜品列表
-      orderDetailList: [
-        {
-          dishName: "汉堡",
-          description: "好吃的汉堡",
-          number: 3,
-          dishAmount: 39.0,
-          dishPhoto: "https://i.postimg.cc/NFpkQDCW/image.png"
-        },
-        {
-          dishName: "汉堡",
-          description: "好吃的汉堡",
-          number: 1,
-          dishAmount: 15.0,
-          dishPhoto: "https://i.postimg.cc/NFpkQDCW/image.png"
-        },
-        {
-          dishName: "汉堡",
-          description: "好吃的汉堡",
-          number: 2,
-          dishAmount: 39.0,
-          dishPhoto: "https://i.postimg.cc/NFpkQDCW/image.png"
-        },
-        {
-          dishName: "汉堡",
-          description: "好吃的汉堡",
-          number: 3,
-          dishAmount: 39.0,
-          dishPhoto: "https://i.postimg.cc/NFpkQDCW/image.png"
-        },
-        {
-          dishName: "汉堡",
-          description: "好吃的汉堡",
-          number: 3,
-          dishAmount: 39.0,
-          dishPhoto: "https://i.postimg.cc/NFpkQDCW/image.png"
-        }
-
-      ],
-    }
+      amount: 0,
+      orderDetailList: [],
+    };
   },
 
   methods: {
-
     //初始化页面，获取订单数据
-    getOrderDetial(){
-
-
+    getOrderDetial() {
       this.$axios
-        .get("/api/user/order/Details/"+this.$route.query.orderID)
+        .get("/api/user/order/Details/" + this.$route.query.orderID)
         .then((res) => {
-          let orderId=res.data.orderId
-          let orderIdStr=orderId.toString()
-          let orderIdStrLength=orderIdStr.length
-          if(orderIdStrLength<4){
-            for(let i=0;i<4-orderIdStrLength;i++){
-              orderIdStr="0"+orderIdStr
-            }
-          }else {
-            orderIdStr=orderIdStr.substring(orderIdStrLength-4,orderIdStrLength)
+          if (res.data.code == 1) {
+            this.orderId = res.data.data.order.id;
+            this.orderNumber = res.data.data.order.code;
+            this.currentSwipeItem = res.data.data.order.status;
+            this.orderDetailList = res.data.data.dishs;
+
+            this.amount = res.data.data.order.amount;
+            var time = String(res.data.data.order.createTime);
+            this.orderTime = time.substring(0, 19);
+          } else {
+            this.$message({
+              type: "error",
+              message: res.data.msg,
+            });
+            this.$router.push("/user");
           }
-          //获取订单id取后四位数，不够前边补0
-          // 拼接成取餐码, 年最后一位+月日+订单id，订单id变成4位数，不够前边补零
-          //this.orderNumber=res.data.createdTime.substring(3,10).replace(/-/g,"")+orderIdStr
-          this.orderNumber = orderId
-          console.log(this.orderNumber)
-
-          //获取订单状态
-          this.currentSwipeItem=res.data.status
-
-          //获取订单详情
-          this.orderDetailList=res.data.orderDetailList2
-
-          //获取订单信息
-          console.log(res)
-          this.orderId=res.data.uuid.substring(0,19) //orderId,存uuid吧
-          this.orderTime=res.data.createdTime
-          this.totalAmount=res.data.totalAmount
         })
-        .catch((err) => {});
-
-
-
-
+        .catch((err) => {
+          console.log(err);
+        });
     },
 
     // 点击 已取餐
     finish() {
-      if(this.currentSwipeItem<2){
-        this.$toast.fail('厨师还没做好\n请耐心等待');
+      if (this.currentSwipeItem < 2) {
+        this.$toast.fail("厨师还没做好\n请耐心等待");
         return;
       }
       this.$api({
-        url: '/orderinfo/updatestatus',
-        method: 'post',
+        url: "/orderinfo/updatestatus",
+        method: "post",
         params: {
-          orderID: sessionStorage.getItem('orderID1'),
-          status: 3
-        }
-      }).then(res => {
-        if(res.code===20031){
-        }
-        else {
+          orderID: sessionStorage.getItem("orderID1"),
+          status: 3,
+        },
+      })
+        .then((res) => {
+          if (res.code === 20031) {
+          } else {
+            console.log(error);
+          }
+        })
+        .catch(function (error) {
           console.log(error);
-        }
-      }).catch(function (error){
-        console.log(error);
-      });
+        });
       this.currentSwipeItem = 3;
     },
-    //
-
-
-    //获取订单菜品列表
-    // getOrderDishes(){
-    //   // 通过后端API获取菜品列表(orderinfo/{status}/{number}) 这里是模拟数据，后期要改，
-    //   this.$api({
-    //     url: 'orderinfo/0/3',
-    //     method: 'get'
-    //   }).then(res => {
-    //     console.log(res)
-    //     this.orderDishList = res.data[0].orderDetailList;
-    //     console.log(this.orderDishList);
-    //   }).catch(function (error) {
-    //     console.log(error);
-    //   });
-    // },
-    //返回上一层，没完全实现
     back() {
-      console.log("返回订单")
-      this.$router.replace('/user');
-    }
-  }
-  ,
+      console.log("返回订单");
+      this.$router.replace("/user");
+    },
+  },
   mounted() {
-    this.getOrderDetial()
-    // this.getOrderDishes();
-
-    let _this = this// 声明一个变量指向Vue实例this，保证作用域一致
-    this.timer = setInterval(() => {
-      _this.getOrderDetial();
-    }, 5000)
-
-  }
-}
+    this.getOrderDetial();
+  },
+};
 </script>
 
 <style lang="scss" scoped>
-
 #orderstep {
-  margin: 60px auto
+  margin: 60px auto;
 }
 
-.header{
-    background:rgb(0,160,220);
-    height: 45px;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    color: #fff;
+.header {
+  background: rgb(0, 160, 220);
+  height: 45px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  color: #fff;
 }
-.header > .back{
-    position: absolute;
-    top: 2px;
-    left: 0;
+.header > .back {
+  position: absolute;
+  top: 2px;
+  left: 0;
 }
-.header > .back > .el-icon-arrow-left{
-    display: block;
-    padding: 10px;
-    font-size: 20px;
-    color: #fff;
+.header > .back > .el-icon-arrow-left {
+  display: block;
+  padding: 10px;
+  font-size: 20px;
+  color: #fff;
 }
-.header > .title{
-    font-size: 20px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+.header > .title {
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .footer-button {
@@ -341,7 +268,7 @@ export default {
   height: 20px;
   width: 50px;
   font-size: 13px;
-  color: #FFFFFF;
+  color: #ffffff;
   text-align: center;
 }
 
@@ -365,7 +292,6 @@ export default {
   font-size: 20px;
   color: #0d0b0b;
 }
-
 
 //出去头部的高度和底部的高度
 #truebody {
@@ -419,7 +345,6 @@ export default {
   border-radius: 10px;
 }
 
-
 .van-steps {
   background: transparent; // 如果背景是白色就不需要了，默认是白色的
   width: 80%;
@@ -445,7 +370,7 @@ export default {
       color: #0a0101;
       left: -20px;
       width: 50px;
-      font-size: 13px
+      font-size: 13px;
     }
 
     .title-inactive {
@@ -453,7 +378,7 @@ export default {
       color: #999999;
       left: -20px;
       width: 50px;
-      font-size: 13px
+      font-size: 13px;
     }
 
     .title-finish {
@@ -504,7 +429,6 @@ export default {
   ::v-deep .van-step--finish .van-step__line {
     background-color: #fdcc56; //自定义激活时进度条的颜色
     border: none;
-
   }
 }
 
@@ -527,5 +451,4 @@ export default {
   position: relative;
   left: 0;
 }
-
 </style>

@@ -18,7 +18,7 @@ public class Orders {
 
 
     @TableField(fill = FieldFill.INSERT,value = "order_time")
-    private Date createTime;
+    private String createTime;
     private float amount;
     private String remark;
     private int tableNo;
