@@ -73,7 +73,7 @@ public class LoginController {
                 Map<String,Object> objects = new HashMap();
                 objects.put("userinfo",one);
                 objects.put("token", jwtConfig.createToken(one.getId()));
-                return R.success(objects,"登录成功,快去下单吧！");
+                return R.success(objects,"登录成功,快去下单吧！！");
             }
         }
 
