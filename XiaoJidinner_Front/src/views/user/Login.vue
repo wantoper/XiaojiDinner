@@ -8,7 +8,10 @@
           <input
             type="text"
             class="input"
-            v-model="loginForm.phone"
+            v-model="loginForm.phone
+            
+            
+            "
             placeholder="手机号"
           />
           <input

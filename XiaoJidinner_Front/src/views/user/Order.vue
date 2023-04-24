@@ -181,56 +181,40 @@ export default {
     //初始化页面，获取订单数据
     getOrderDetial(){
 
-      //判断是从订单列表页进来的还是从支付成功页进来的
-      if (sessionStorage.getItem('orderID') == null) {
-        var url = '/orderinfo/orderdetail/'+this.$route.query.orderID
-        sessionStorage.setItem('orderID1',this.$route.query.orderID)
-        console.log("从历史订单页进来的")
-      }else{
-        var url = '/orderinfo/orderdetail/'+sessionStorage.getItem('orderID')
-        sessionStorage.setItem('orderID1',sessionStorage.getItem('orderID'))
-        console.log("从支付成功页进来的")
-      }
 
-
-      //先请求后端数据，接口文档51,也不一定是
-      this.$api({
-        url:url,
-        method:'get',
-      }).then(res=>{
-        sessionStorage.removeItem('orderID')
-        console.log(res)
-        //获取订单id取后四位数，不够前边补0
-        let orderId=res.data.orderId
-        let orderIdStr=orderId.toString()
-        let orderIdStrLength=orderIdStr.length
-        if(orderIdStrLength<4){
-          for(let i=0;i<4-orderIdStrLength;i++){
-            orderIdStr="0"+orderIdStr
+      this.$axios
+        .get("/api/user/order/Details/"+this.$route.query.orderID)
+        .then((res) => {
+          let orderId=res.data.orderId
+          let orderIdStr=orderId.toString()
+          let orderIdStrLength=orderIdStr.length
+          if(orderIdStrLength<4){
+            for(let i=0;i<4-orderIdStrLength;i++){
+              orderIdStr="0"+orderIdStr
+            }
+          }else {
+            orderIdStr=orderIdStr.substring(orderIdStrLength-4,orderIdStrLength)
           }
-        }else {
-          orderIdStr=orderIdStr.substring(orderIdStrLength-4,orderIdStrLength)
-        }
+          //获取订单id取后四位数，不够前边补0
+          // 拼接成取餐码, 年最后一位+月日+订单id，订单id变成4位数，不够前边补零
+          //this.orderNumber=res.data.createdTime.substring(3,10).replace(/-/g,"")+orderIdStr
+          this.orderNumber = orderId
+          console.log(this.orderNumber)
 
-        // 拼接成取餐码, 年最后一位+月日+订单id，订单id变成4位数，不够前边补零
-        //this.orderNumber=res.data.createdTime.substring(3,10).replace(/-/g,"")+orderIdStr
-        this.orderNumber = orderId
-        console.log(this.orderNumber)
+          //获取订单状态
+          this.currentSwipeItem=res.data.status
 
-        //获取订单状态
-        this.currentSwipeItem=res.data.status
+          //获取订单详情
+          this.orderDetailList=res.data.orderDetailList2
 
-        //获取订单详情
-        this.orderDetailList=res.data.orderDetailList2
+          //获取订单信息
+          console.log(res)
+          this.orderId=res.data.uuid.substring(0,19) //orderId,存uuid吧
+          this.orderTime=res.data.createdTime
+          this.totalAmount=res.data.totalAmount
+        })
+        .catch((err) => {});
 
-        //获取订单信息
-        console.log(res)
-        this.orderId=res.data.uuid.substring(0,19) //orderId,存uuid吧
-
-        this.orderTime=res.data.createdTime
-        this.totalAmount=res.data.totalAmount
-
-      })
 
 
 

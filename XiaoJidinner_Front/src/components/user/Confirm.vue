@@ -73,13 +73,21 @@ export default {
       this.$axios
         .post("/api/user/order/createOrder", this.orderData)
         .then((res) => {
-          //   this.showConfirm = false;
-          //   this.$emit("clear");
-          this.remark = "";
-          this.$message({
-            type: "success",
-            message: "下单成功店家正在处理您的订单请耐心等待...",
-          });
+          if(res.data.code == 1){
+            this.showConfirm = false;
+            this.$emit("clear");
+            this.remark = "";
+            this.$message({
+              type: "success",
+              message: "下单成功！请耐心等待叫餐",
+            });
+            this.$router.push("/user/order?orderID="+res.data.data);
+          }else{
+            this.$message({
+              type: "error",
+              message: res.data.msg,
+            });
+          }
         })
         .catch((err) => {});
     },
