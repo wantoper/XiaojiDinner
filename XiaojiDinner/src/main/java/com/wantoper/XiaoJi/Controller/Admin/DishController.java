@@ -23,10 +23,6 @@ public class DishController {
 
     @RequestMapping("/getall")
     public R getall(@RequestBody Map<String,String> map){
-        System.out.println(map.get("index"));
-        System.out.println(map.get("size"));
-        System.out.println(map.get("name"));
-
         Page<Dish> page=new Page<Dish>(Integer.parseInt(map.get("index")),Integer.parseInt(map.get("size")));
 
         QueryWrapper<Dish> objectQueryWrapper = new QueryWrapper<>();

@@ -8,8 +8,13 @@
     </div>
 
     <div id="truebody">
+      <div class="ordercaneltext" v-if="currentSwipeItem == 4">
+        <van-icon name="cross" size="30px" />
+        <h1>订单已取消</h1>
+      </div>
+
       <!--取餐码-->
-      <div id="numberbar" style="text-align: left">
+      <div id="numberbar" style="text-align: left" v-else>
         <h1 id="odernumber">{{ orderNumber }}</h1>
         <van-badge :v-show="1" content="取餐码" id="numberindex" />
       </div>
@@ -106,7 +111,7 @@
     </div>
 
     <br />
-    <div id="orderfooter">
+    <div id="orderfooter" v-if="this.currentSwipeItem == 2">
       <van-button
         plain
         hairline
@@ -116,6 +121,19 @@
         size="formal"
         @click="finish"
         >我已取餐
+      </van-button>
+    </div>
+
+    <div id="orderfooter" v-if="this.currentSwipeItem < 1">
+      <van-button
+        plain
+        hairline
+        round
+        color="#000000"
+        class="footer-button"
+        size="formal"
+        @click="canel"
+        >取消订单
       </van-button>
     </div>
   </div>
@@ -137,8 +155,8 @@ export default {
       orderId: "",
       orderNumber: "2000",
       currentSwipeItem: 0,
-      step: ["确认中", "配餐中", "待取餐", "已完成"],
-      stepicon: ["todo-list-o", "fire-o", "bulb-o", "passed"],
+      step: ["确认中", "配餐中", "待取餐", "已完成", "已取消"],
+      stepicon: ["todo-list-o", "fire-o", "bulb-o", "passed", "todo-list-o"],
       orderTime: "2022-23-18",
       amount: 0,
       orderDetailList: [],
@@ -175,28 +193,42 @@ export default {
 
     // 点击 已取餐
     finish() {
-      if (this.currentSwipeItem < 2) {
-        this.$toast.fail("厨师还没做好\n请耐心等待");
-        return;
-      }
-      this.$api({
-        url: "/orderinfo/updatestatus",
-        method: "post",
-        params: {
-          orderID: sessionStorage.getItem("orderID1"),
-          status: 3,
-        },
-      })
+      this.$axios
+        .get("/api/user/order/finish/" + this.orderId)
         .then((res) => {
-          if (res.code === 20031) {
+          if (res.data.code == 1) {
+            this.$message({
+              type: "success",
+              message: res.data.data,
+            });
+            this.currentSwipeItem = 3;
           } else {
-            console.log(error);
+            this.$message({
+              type: "error",
+              message: res.data.msg,
+            });
           }
         })
-        .catch(function (error) {
-          console.log(error);
-        });
-      this.currentSwipeItem = 3;
+        .catch(function (error) {});
+    },
+    // 点击 取消订单
+    canel() {
+      if (!window.confirm("确认取消？")) {
+        return;
+      }
+      this.$axios
+        .get("/api/user/order/canel/" + this.orderId)
+        .then((res) => {
+          if (res.data.code == 1) {
+            window.location.reload();
+          } else {
+            this.$message({
+              type: "error",
+              message: res.data.msg,
+            });
+          }
+        })
+        .catch(function (error) {});
     },
     back() {
       console.log("返回订单");
@@ -450,5 +482,13 @@ export default {
   margin-left: 35px;
   position: relative;
   left: 0;
+}
+.ordercaneltext {
+  display: flex;
+  justify-content: center;
+  margin-left: 15%;
+}
+.ordercaneltext h1 {
+  font-size: 28px;
 }
 </style>

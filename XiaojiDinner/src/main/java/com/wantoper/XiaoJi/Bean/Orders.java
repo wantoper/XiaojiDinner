@@ -8,6 +8,7 @@ import lombok.Data;
 import org.springframework.context.annotation.Bean;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class Orders {
@@ -23,4 +24,10 @@ public class Orders {
     private String remark;
     private int tableNo;
     private String code;
+
+    @TableField(exist = false)
+    private List<orderDetail> orderDetails;
+
+    @TableField(exist = false)
+    private User orderuser;
 }

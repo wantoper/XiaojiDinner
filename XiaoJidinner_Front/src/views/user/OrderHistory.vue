@@ -10,7 +10,7 @@
         @click="selectOrder(order.orderinfo.id)"
       >
         <!--如果订单是没完成的，显示取餐码-->
-        <div v-if="order.orderinfo.status < 3">
+        <div>
           <van-cell
             icon="shop-o"
             :value="step[order.orderinfo.status]"
@@ -19,12 +19,15 @@
             title-style="font-size: 23px;"
             value-class="step"
           >
-            <!-- 使用 title 插槽来自定义标题 -->
-            <template #title>
+            <template #title v-if="order.orderinfo.status < 3">
+              <van-tag type="danger" style="top: -4px"
+                >取餐码 {{ order.orderinfo.code }}</van-tag
+              >
+            </template>
+            <template #title v-else>
               <span class="custom-title" style="font-size: 18px">{{
-                order.orderinfo.id
+                order.orderinfo.createTime
               }}</span>
-              <van-tag type="danger">取餐码 {{ order.orderinfo.code }}</van-tag>
             </template>
           </van-cell>
 
@@ -48,42 +51,6 @@
             >
           </van-cell>
         </div>
-        <!--如果订单是已完成的，显示下单时间-->
-        <div v-else>
-          <van-cell
-            icon="shop-o"
-            :value="step[order.status]"
-            is-link
-            size="large"
-            value-class="step"
-          >
-            <!-- 使用 title 插槽来自定义标题 -->
-            <template #title>
-              <span class="custom-title">{{ order.createdTime }}</span>
-              <!--          <van-tag type="danger">取餐码</van-tag>-->
-            </template>
-          </van-cell>
-
-          <van-cell center value-class="totalAmount">
-            <template #title>
-              <van-image
-                v-for="item in order.orderDetailList"
-                :key="item.id"
-                :src="item.dishPhoto"
-                height="60px"
-                fit="cover"
-                style="
-                  margin-right: 10px;
-                  margin-top: 10px;
-                  margin-bottom: 10px;
-                "
-              />
-            </template>
-            <span class="custom-price" style="margin-right: 10px"
-              >¥{{ order.totalAmount }}</span
-            >
-          </van-cell>
-        </div>
       </div>
     </div>
 
@@ -100,7 +67,7 @@ export default {
   name: "OrderHistory",
   data() {
     return {
-      step: ["确认中", "配餐中", "待取餐", "已完成"],
+      step: ["确认中", "配餐中", "待取餐", "已完成", "已取消"],
       orders: [],
     };
   },
@@ -116,7 +83,7 @@ export default {
         .get("/api/user/order/myorders")
         .then((res) => {
           if (res.data.code == 1) {
-            this.orders = res.data.data;
+            this.orders = res.data.data.reverse();
           } else {
             this.$message({
               type: "error",

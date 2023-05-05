@@ -10,6 +10,8 @@ import com.wantoper.XiaoJi.Config.JWTConfig;
 import com.wantoper.XiaoJi.Services.DishServices;
 import com.wantoper.XiaoJi.Services.OrderDetailsServices;
 import com.wantoper.XiaoJi.Services.OrderServices;
+import com.wantoper.XiaoJi.Services.UserServices;
+import com.wantoper.XiaoJi.Utity.OrderCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,9 @@ public class OrderController{
     @Autowired
     private JWTConfig jwtConfig;
 
+    @Autowired
+    private UserServices userServices;
+
     @PostMapping("/createOrder")
     public R createorder(@RequestBody OrderAndOrderDetails orderAndOrderDetails, HttpServletRequest request){
         String userid = jwtConfig.getTokenClaim(request.getHeader("token")).getSubject().toString();
@@ -37,7 +42,9 @@ public class OrderController{
         orders.setRemark(orderAndOrderDetails.getRemark());
         orders.setTableNo(orderAndOrderDetails.getDeskNo());
         orders.setUserId(userid);
+        orders.setCode(OrderCode.getcode());
         orderServices.save(orders);
+
         List<orderDetail> order = orderAndOrderDetails.getOrder();
         for (orderDetail orderDetail : order) {
             orderDetail.setDishId(orderDetail.getId());
@@ -45,6 +52,11 @@ public class OrderController{
             orderDetail.setOrderId(orders.getId());
         }
         orderDetailsServices.saveBatch(order);
+
+        User user = userServices.getById(userid);
+        user.setRank((int)orders.getAmount()+user.getRank());
+        user.setOrderNumber(user.getOrderNumber()+1);
+        userServices.updateById(user);
         return R.success(orders.getId());
     }
 
@@ -81,10 +93,44 @@ public class OrderController{
 
             rs.put("orderinfo",orders);
             rs.put("orderDetaillist",orderDetaillist);
-
             resultList.add(rs);
         }
-
         return R.success(resultList);
+    }
+
+    @GetMapping("/finish/{id}")
+    public R myorders(HttpServletRequest request,@PathVariable String id){
+        boolean b=false;
+        String userid = jwtConfig.getTokenClaim(request.getHeader("token")).getSubject();
+
+        QueryWrapper<Orders> ordersQueryWrapper = new QueryWrapper<>();
+        ordersQueryWrapper.eq("user_id",userid);
+        ordersQueryWrapper.eq("id",id);
+        Orders one = orderServices.getOne(ordersQueryWrapper);
+        if(one != null){
+            one.setStatus(3);
+            b = orderServices.updateById(one);
+        }
+        return b?R.success("取餐成功！"):R.error("取餐失败！");
+    }
+
+    @GetMapping("/canel/{id}")
+    public R canel(HttpServletRequest request,@PathVariable String id){
+        boolean b=false;
+        String userid = jwtConfig.getTokenClaim(request.getHeader("token")).getSubject();
+
+        QueryWrapper<Orders> ordersQueryWrapper = new QueryWrapper<>();
+        ordersQueryWrapper.eq("user_id",userid);
+        ordersQueryWrapper.eq("id",id);
+        ordersQueryWrapper.ne("status",4);
+        Orders one = orderServices.getOne(ordersQueryWrapper);
+        if(one != null){
+            one.setStatus(4);
+            User byId = userServices.getById(one.getUserId());
+            byId.setRank((int) (byId.getRank()- one.getAmount()));
+            userServices.updateById(byId);
+            b = orderServices.updateById(one);
+        }
+        return b?R.success("取消成功！"):R.error("取消失败！");
     }
 }

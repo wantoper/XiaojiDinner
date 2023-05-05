@@ -12,7 +12,7 @@ public class FillHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
 
-        SimpleDateFormat dateFormat =new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dateFormat =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formattedDate = dateFormat.format(new Date());
         this.strictInsertFill(metaObject,"createTime", String.class,formattedDate);
     }
