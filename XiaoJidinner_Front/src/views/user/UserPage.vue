@@ -65,7 +65,7 @@ export default {
     loadUser() {
       this.$axios.get("api/user/info").then((res) => {
         this.user = res.data.data;
-        if (this.user.avatar == null) {
+        if (this.user.avatar == null || this.user.avatar == "") {
           this.user.avatar = require("../../assets/picture/toorderl.png");
         }
       });

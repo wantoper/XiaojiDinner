@@ -95,6 +95,14 @@ const routes = [
         component: () => import("../views/admin/User"),
       },
       {
+        path: "/admin/usermanager",
+        name: "User",
+        meta: {
+          title: "会员管理",
+        },
+        component: () => import("../views/admin/UserManager"),
+      },
+      {
         path: "/admin/*",
         name: "AdminNotFount",
         meta: {

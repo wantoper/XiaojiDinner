@@ -8,6 +8,7 @@ import com.wantoper.XiaoJi.Services.OrderDetailsServices;
 import com.wantoper.XiaoJi.Services.OrderServices;
 import com.wantoper.XiaoJi.Services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +28,7 @@ public class AdminOrderController {
     @Autowired
     UserServices userServices;
 
-    @RequestMapping("/getallfinish")
+    @PostMapping("/getallfinish")
     public R getall(@RequestBody Map<String,String> map){
         Page<Orders> page=new Page<Orders>(Integer.parseInt(map.get("index")),Integer.parseInt(map.get("size")));
 
@@ -80,7 +81,7 @@ public class AdminOrderController {
         return R.success(list);
     }
 
-    @RequestMapping("/changestatus")
+    @PostMapping("/changestatus")
     public R changestatus(@RequestBody Map<String,String> map){
         String id = map.getOrDefault("id", "");
         int status = Integer.parseInt(map.getOrDefault("status", "0"));
@@ -103,4 +104,7 @@ public class AdminOrderController {
         }
         return R.success(resultmsg);
     }
+
+
+
 }
