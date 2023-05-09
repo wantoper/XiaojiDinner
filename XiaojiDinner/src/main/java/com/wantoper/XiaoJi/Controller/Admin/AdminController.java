@@ -31,4 +31,10 @@ public class AdminController {
         shopInfoMapper.updateById(shopInfo);
         return R.success("修改成功！");
     }
+
+    @RequestMapping("/data")
+    public R data(@RequestBody ShopInfo shopInfo){
+        shopInfoMapper.updateById(shopInfo);
+        return R.success("修改成功！");
+    }
 }

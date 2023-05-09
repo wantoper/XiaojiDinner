@@ -3,6 +3,7 @@ server:
 spring:
   application:
     name: XiaoJidinner
+    indexurl: http://192.168.43.155:80/index/
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver

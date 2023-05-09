@@ -27,18 +27,21 @@
             tableData.filter(
               (data) =>
                 !search ||
-                data.no.toString().toLowerCase().includes(search.toLowerCase())
+                data.tableNo
+                  .toString()
+                  .toLowerCase()
+                  .includes(search.toLowerCase())
             )
           "
           size="medium"
           :max-height="tableHeight"
-          :default-sort="{ prop: 'no', order: 'ascending' }"
+          :default-sort="{ prop: 'tableNo', order: 'ascending' }"
           style="width: 100%"
         >
           <el-table-column
             fixed
             align="center"
-            prop="no"
+            prop="tableNo"
             sortable
             label="餐桌号码"
           >
@@ -89,14 +92,13 @@ export default {
         title: "添加餐桌号码",
       },
       form: {
-        url: "",
-        no: "",
+        tableNo: "",
       },
       qrcodeData: {
         title: "",
         visible: false,
       },
-      tableData: [{ no: 1, url: "http://192.168.43.155:8081/index/1" }],
+      tableData: [{ tableNo: 1, url: "http://192.168.43.155:8081/index/1" }],
       tableHeight: window.innerHeight - 142,
       search: "",
     };
@@ -104,9 +106,9 @@ export default {
   methods: {
     loadData() {
       this.$axios
-        .get("/api/qrcode/all")
+        .get("/api/admin/table/getall")
         .then((res) => {
-          this.tableData = res.data;
+          this.tableData = res.data.data;
         })
         .catch((err) => console.log(err));
     },
@@ -116,19 +118,18 @@ export default {
         title: "添加餐桌号码",
       };
       this.form = {
-        url: document.URL.split("/admin/qrcode")[0],
-        no: "",
+        tableNo: "",
       };
     },
     delTableNum(row) {
-      this.$confirm(`确认删除桌号 “${row.no}” 吗？`)
+      this.$confirm(`确认删除桌号 “${row.tableNo}” 吗？`)
         .then((_) => {
           this.$axios
-            .post("/api/qrcode/del", { _id: row._id })
+            .post("/api/admin/table/del", { tableNo: row.tableNo })
             .then((result) => {
               this.$message({
                 type: "success",
-                message: result.data,
+                message: result.data.data,
               });
               this.loadData();
             })
@@ -140,7 +141,7 @@ export default {
     },
     qrcode(row) {
       this.qrcodeData = {
-        title: row.no,
+        title: row.tableNo,
         visible: true,
       };
       this.$refs.showQRCode.drawQRCode(row.url);

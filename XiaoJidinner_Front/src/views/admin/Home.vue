@@ -178,17 +178,31 @@ export default {
   },
   methods: {
     async initCard() {
-      try {
-        const res = await this.$axios.post("/api/statistic/data", {
-          date: new Date(),
-        });
-        this.cardData = res.data.cardData;
-        this.chartData.xAxis.data = res.data.chartsData.xData;
-        this.chartData.series[0].data = res.data.chartsData.yIncome;
-        this.chartData.series[1].data = res.data.chartsData.yOrder;
-      } catch (err) {
-        console.log(err);
-      }
+      // try {
+      //   const res = await this.$axios.post("/api/admin/data", {
+      //     date: new Date(),
+      //   });
+      //   this.cardData = res.data.cardData;
+      //   res.data.chartsData.xData = [100, 200, 300];
+      //   res.data.chartsData.yIncome = [100, 200, 300];
+      //   res.data.chartsData.yIncome = [100, 200, 300];
+      //   this.chartData.xAxis.data = res.data.chartsData.xData;
+      //   this.chartData.series[0].data = res.data.chartsData.yIncome;
+      //   this.chartData.series[1].data = res.data.chartsData.yOrder;
+      // } catch (err) {
+      //   console.log(err);
+      // }
+
+      this.cardData = {
+        orderCounts: 10,
+        totalIncome: 20,
+        commodityCounts: 30,
+        categoryCounts: 40,
+      };
+
+      this.chartData.xAxis.data = ["2023-5-08", "2023-5-09", "2023-5-10"];
+      this.chartData.series[0].data = [400, 600, 800];
+      this.chartData.series[1].data = [100, 200, 300];
     },
   },
   mounted() {
