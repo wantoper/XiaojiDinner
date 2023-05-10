@@ -1,11 +1,14 @@
 package com.wantoper.XiaoJi.Controller.Admin;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wantoper.XiaoJi.Bean.Employee;
+import com.wantoper.XiaoJi.Bean.Orders;
 import com.wantoper.XiaoJi.Bean.R;
 import com.wantoper.XiaoJi.Bean.ShopInfo;
 import com.wantoper.XiaoJi.Config.JWTConfig;
 import com.wantoper.XiaoJi.Mapper.ShopInfoMapper;
 import com.wantoper.XiaoJi.Services.EmployeeServices;
+import com.wantoper.XiaoJi.Services.OrderServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
@@ -15,10 +18,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -26,6 +29,9 @@ import java.util.Map;
 public class AdminController {
     @Autowired
     private ShopInfoMapper shopInfoMapper;
+
+    @Autowired
+    private OrderServices orderServices;
     @RequestMapping("/shop/set")
     public R shopset(@RequestBody ShopInfo shopInfo){
         shopInfoMapper.updateById(shopInfo);
@@ -33,8 +39,39 @@ public class AdminController {
     }
 
     @RequestMapping("/data")
-    public R data(@RequestBody ShopInfo shopInfo){
-        shopInfoMapper.updateById(shopInfo);
-        return R.success("修改成功！");
+    public R data(@RequestBody Map<String,String> map) throws ParseException {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        QueryWrapper<Orders> ordersQueryWrapper = new QueryWrapper<>();
+        Date date = simpleDateFormat.parse(map.getOrDefault("date", ""));
+        ordersQueryWrapper.ge("order_time", date);
+        ordersQueryWrapper.eq("status","3");
+        List<Orders> list = orderServices.list(ordersQueryWrapper);
+
+
+        List<String> xData=new ArrayList<>();
+        List<Float> yIncome = new ArrayList<>();
+        List<Integer> yOrder = new ArrayList<>();
+
+        list.parallelStream().map(t->{
+            t.setCreateTime(t.getCreateTime().substring(0,10));
+            return t;
+        }).collect(Collectors.groupingBy(t->t.getCreateTime(),Collectors.toList()))
+                .forEach((d,l)->{
+                    xData.add(d);
+                    float amountsum=0;
+                    int ordersum=0;
+                    for (Orders orders : l) {
+                        amountsum+=orders.getAmount();
+                        ordersum++;
+                    }
+                    yIncome.add(amountsum);
+                    yOrder.add(ordersum);
+                });
+
+
+        System.out.println(xData);
+        System.out.println(yIncome);
+        System.out.println(yOrder);
+        return R.success(list);
     }
 }
