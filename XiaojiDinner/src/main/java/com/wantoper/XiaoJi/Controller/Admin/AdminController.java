@@ -1,26 +1,23 @@
 package com.wantoper.XiaoJi.Controller.Admin;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.wantoper.XiaoJi.Bean.Employee;
 import com.wantoper.XiaoJi.Bean.Orders;
 import com.wantoper.XiaoJi.Bean.R;
 import com.wantoper.XiaoJi.Bean.ShopInfo;
-import com.wantoper.XiaoJi.Config.JWTConfig;
 import com.wantoper.XiaoJi.Mapper.ShopInfoMapper;
-import com.wantoper.XiaoJi.Services.EmployeeServices;
+import com.wantoper.XiaoJi.Services.CategoryServices;
+import com.wantoper.XiaoJi.Services.DishServices;
 import com.wantoper.XiaoJi.Services.OrderServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -32,6 +29,10 @@ public class AdminController {
 
     @Autowired
     private OrderServices orderServices;
+    @Autowired
+    private CategoryServices categoryServices;
+    @Autowired
+    private DishServices dishServices;
     @RequestMapping("/shop/set")
     public R shopset(@RequestBody ShopInfo shopInfo){
         shopInfoMapper.updateById(shopInfo);
@@ -47,15 +48,16 @@ public class AdminController {
         ordersQueryWrapper.eq("status","3");
         List<Orders> list = orderServices.list(ordersQueryWrapper);
 
-
         List<String> xData=new ArrayList<>();
         List<Float> yIncome = new ArrayList<>();
         List<Integer> yOrder = new ArrayList<>();
+        Map<String, Object> cardData = new HashMap<>();
+
 
         list.parallelStream().map(t->{
             t.setCreateTime(t.getCreateTime().substring(0,10));
             return t;
-        }).collect(Collectors.groupingBy(t->t.getCreateTime(),Collectors.toList()))
+        }).collect(Collectors.groupingBy(t->t.getCreateTime(),TreeMap::new,Collectors.toList()))
                 .forEach((d,l)->{
                     xData.add(d);
                     float amountsum=0;
@@ -66,12 +68,22 @@ public class AdminController {
                     }
                     yIncome.add(amountsum);
                     yOrder.add(ordersum);
+
+                    if(d.equals(simpleDateFormat.format(new Date()))){
+                        cardData.put("orderCounts",ordersum);
+                        cardData.put("totalIncome",amountsum);
+                    }
+
                 });
 
+        cardData.put("categoryCounts",categoryServices.count());
+        cardData.put("commodityCounts",dishServices.count());
+        Map<String, Object> ResultData = new HashMap<>();
+        ResultData.put("cardData",cardData);
+        ResultData.put("xData",xData);
+        ResultData.put("yIncome",yIncome);
+        ResultData.put("yOrder",yOrder);
 
-        System.out.println(xData);
-        System.out.println(yIncome);
-        System.out.println(yOrder);
-        return R.success(list);
+        return R.success(ResultData);
     }
 }

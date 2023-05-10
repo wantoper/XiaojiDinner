@@ -90,7 +90,7 @@ public class PublicController {
         Collections.sort(list, new Comparator<Category>() {
             @Override
             public int compare(Category o1, Category o2) {
-                return (int)(Long.parseLong(o1.getId())-Long.parseLong(o2.getId()));
+                return (o1.getSort())-o2.getSort();
             }
         });
         for (Category category : list) {

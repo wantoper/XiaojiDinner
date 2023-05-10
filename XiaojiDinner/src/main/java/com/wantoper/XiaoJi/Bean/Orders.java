@@ -5,13 +5,15 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
+import lombok.SneakyThrows;
 import org.springframework.context.annotation.Bean;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 @Data
-public class Orders {
+public class Orders implements Comparable<Orders> {
     @TableId(type = IdType.ASSIGN_ID)
     private String id;
     private int status;
@@ -30,4 +32,12 @@ public class Orders {
 
     @TableField(exist = false)
     private User orderuser;
+
+    @SneakyThrows
+    @Override
+    public int compareTo(Orders o) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return  simpleDateFormat.parse(this.getCreateTime()).compareTo(simpleDateFormat.parse(o.getCreateTime()));
+    }
+
 }

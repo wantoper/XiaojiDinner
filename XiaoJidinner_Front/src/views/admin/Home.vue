@@ -177,37 +177,27 @@ export default {
     };
   },
   methods: {
-    GetDateStr(AddDayCount) { 
-        var  dd =  new  Date();
-        dd.setDate(dd.getDate()+AddDayCount); //获取AddDayCount天后的日期
-        var  y = dd.getFullYear(); 
-        var  m = (dd.getMonth()+1)<10? "0" +(dd.getMonth()+1):(dd.getMonth()+1); //获取当前月份的日期，不足10补0
-        var  d = dd.getDate()<10? "0" +dd.getDate():dd.getDate(); //获取当前几号，不足10补0
-        return  y+ "-" +m+ "-" +d; 
+    GetDateStr(AddDayCount) {
+      var dd = new Date();
+      dd.setDate(dd.getDate() + AddDayCount); //获取AddDayCount天后的日期
+      var y = dd.getFullYear();
+      var m =
+        dd.getMonth() + 1 < 10 ? "0" + (dd.getMonth() + 1) : dd.getMonth() + 1; //获取当前月份的日期，不足10补0
+      var d = dd.getDate() < 10 ? "0" + dd.getDate() : dd.getDate(); //获取当前几号，不足10补0
+      return y + "-" + m + "-" + d;
     },
     async initCard() {
       try {
         const res = await this.$axios.post("/api/admin/data", {
           date: this.GetDateStr(-5),
         });
-        this.cardData = res.data.cardData;
-        this.chartData.xAxis.data = res.data.chartsData.xData;
-        this.chartData.series[0].data = res.data.chartsData.yIncome;
-        this.chartData.series[1].data = res.data.chartsData.yOrder;
+        this.cardData = res.data.data.cardData;
+        this.chartData.xAxis.data = res.data.data.xData;
+        this.chartData.series[0].data = res.data.data.yIncome;
+        this.chartData.series[1].data = res.data.data.yOrder;
       } catch (err) {
         console.log(err);
       }
-
-      // this.cardData = {
-      //   orderCounts: 10,
-      //   totalIncome: 20,
-      //   commodityCounts: 30,
-      //   categoryCounts: 40,
-      // };
-
-      // this.chartData.xAxis.data = ["2023-5-08", "2023-5-09", "2023-5-10"];
-      // this.chartData.series[0].data = [400, 600, 800];
-      // this.chartData.series[1].data = [100, 200, 300];
     },
   },
   mounted() {
