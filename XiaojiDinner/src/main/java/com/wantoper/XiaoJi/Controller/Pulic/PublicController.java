@@ -102,7 +102,6 @@ public class PublicController {
             result.put("name",category.getName());
             result.put("sort",category.getSort());
             result.put("foods",list1);
-
             resultlist.add(result);
         }
 

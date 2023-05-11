@@ -36,7 +36,10 @@ public class OrderController{
 
     @PostMapping("/createOrder")
     public R createorder(@RequestBody OrderAndOrderDetails orderAndOrderDetails, HttpServletRequest request){
+        //获取用户的jwt token 从jwt中获取用户id
         String userid = jwtConfig.getTokenClaim(request.getHeader("token")).getSubject().toString();
+
+        //保存订单信息
         Orders orders = new Orders();
         orders.setAmount(orderAndOrderDetails.getTotalPrice());
         orders.setRemark(orderAndOrderDetails.getRemark());
@@ -44,7 +47,7 @@ public class OrderController{
         orders.setUserId(userid);
         orders.setCode(OrderCode.getcode());
         orderServices.save(orders);
-
+        //保存商品详情信息
         List<orderDetail> order = orderAndOrderDetails.getOrder();
         for (orderDetail orderDetail : order) {
             orderDetail.setDishId(orderDetail.getId());
@@ -53,6 +56,7 @@ public class OrderController{
         }
         orderDetailsServices.saveBatch(order);
 
+        //根据用户id获取对应订单数 积分 并且累加
         User user = userServices.getById(userid);
         user.setRank((int)orders.getAmount()+user.getRank());
         user.setOrderNumber(user.getOrderNumber()+1);

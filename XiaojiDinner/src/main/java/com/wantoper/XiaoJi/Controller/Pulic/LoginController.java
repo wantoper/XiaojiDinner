@@ -46,15 +46,14 @@ public class LoginController {
 
     @RequestMapping("/userlogin")
     public R usrlogin(@RequestBody Map<String, String> login){
-
-
         String phone=login.get("phone");
         String password= DigestUtils.md5DigestAsHex(login.get("password").getBytes());
-
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<User>();
         userQueryWrapper.eq("phone",phone);
+        //通过手机号查询数据
         User one = userServices.getOne(userQueryWrapper);
         if(one == null){
+            //手机号不存在 则代表未注册 则自动注册 并且返回jwt
             User user = new User();
             user.setPhone(phone);
             user.setPassword(password);
@@ -68,6 +67,7 @@ public class LoginController {
                 return R.success(objects,"首次登录，已自动为您注册！");
             }
         }else{
+            //手机号存在 代表已有该账号 判断账号密码是否正确 并且携带jwt返回
             if(one.getPassword().equals(password)){
                 one.setPassword("");
                 Map<String,Object> objects = new HashMap();
@@ -76,7 +76,6 @@ public class LoginController {
                 return R.success(objects,"登录成功,快去下单吧！！");
             }
         }
-
         return R.error("登陆失败,账号或密码错误");
     }
 }

@@ -15,26 +15,6 @@ public class Employee implements Serializable {
 
     private String username;
 
-    private String name;
-
     private String password;
-
-    private String phone;
-
-    private String sex;
-
-    private String idNumber;
-
-    private Integer status;
-
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
-
-    @TableField(fill = FieldFill.INSERT)
-    private Long createUser;
-
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Long updateUser;
 
 }
